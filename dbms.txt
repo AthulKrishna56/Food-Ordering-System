@@ -1,0 +1,54 @@
+CREATE DATABASE food_ordering;
+USE food_ordering;
+
+-- Categories Table
+CREATE TABLE categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    icon VARCHAR(255)
+);
+
+-- Food Items Table
+CREATE TABLE food_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    category_id INT NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    image_url VARCHAR(255),
+    is_veg BOOLEAN DEFAULT TRUE,
+    is_available BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+-- Orders Table
+CREATE TABLE orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_name VARCHAR(100) NOT NULL,
+    phone VARCHAR(15) NOT NULL,
+    order_type ENUM('Dine-In','Takeaway','Delivery') NOT NULL,
+    table_number INT NULL,
+    address TEXT NULL,
+    total_amount DECIMAL(10,2) DEFAULT 0,
+    status ENUM('Pending','Preparing','Ready','Delivered','Cancelled')
+        DEFAULT 'Pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Order Items Table
+CREATE TABLE order_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    food_item_id INT NOT NULL,
+    quantity INT NOT NULL,
+    unit_price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (food_item_id) REFERENCES food_items(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
